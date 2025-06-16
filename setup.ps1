@@ -11,7 +11,13 @@ $gitInstaller = "C:\git_installer.exe"
 Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.45.1.windows.1/Git-2.45.1-64-bit.exe" -OutFile $gitInstaller
 Start-Process -FilePath $gitInstaller -ArgumentList "/VERYSILENT" -Wait
 
-# Clonar proyecto
+# Agregar Git al PATH (si se instaló correctamente)
+$gitCmdPath = "C:\Program Files\Git\cmd"
+if (Test-Path $gitCmdPath) {
+    [Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";$gitCmdPath", [EnvironmentVariableTarget]::Machine)
+}
+
+# Clonar proyecto desde GitHub
 git clone $repoUrl $sitePath
 
 # Instalar IIS
@@ -49,5 +55,5 @@ New-Website -Name "insuPro" -Port 8081 -PhysicalPath $sitePath -ApplicationPool 
 # Asignar permisos
 icacls $sitePath /grant "IIS_IUSRS:(OI)(CI)(RX)" /T
 
-# Mensaje final sin símbolos especiales
+# Mensaje final
 Write-Host "Proyecto insuPro desplegado en http://localhost:8081"
